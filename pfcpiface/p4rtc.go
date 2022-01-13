@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"io/ioutil"
 	"os"
 	"time"
@@ -435,7 +436,7 @@ func LoadDeviceConfig(deviceConfigPath string) (P4DeviceConfig, error) {
 	if b, err := deviceConfig.Read(bin); err != nil {
 		return nil, fmt.Errorf("read %s: %w", deviceConfigPath, err)
 	} else if b != int(bmv2Info.Size()) {
-		return nil, ErrOperationFailedWithReason("bmv2 bin copy", "invalid size of read config")
+		return nil, errors.ErrOperationFailedWithReason("bmv2 bin copy", "invalid size of read config")
 	}
 
 	return bin, nil

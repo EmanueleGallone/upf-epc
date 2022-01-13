@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 
 	log "github.com/sirupsen/logrus"
@@ -66,7 +67,7 @@ func (s *PFCPSession) UpdatePDR(p pdr) error {
 		}
 	}
 
-	return ErrNotFound("PDR")
+	return errors.ErrNotFound("PDR")
 }
 
 // RemovePDR removes pdr from existing list of PDRs in the session.
@@ -78,5 +79,5 @@ func (s *PFCPSession) RemovePDR(id uint32) (*pdr, error) {
 		}
 	}
 
-	return nil, ErrNotFound("PDR")
+	return nil, errors.ErrNotFound("PDR")
 }

@@ -5,6 +5,7 @@ package main
 
 import (
 	"errors"
+	errors2 "github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"strings"
 
@@ -182,7 +183,7 @@ func (pConn *PFCPConn) handleSessionModificationRequest(msg message.Message) (me
 
 	session, ok := pConn.sessions[localSEID]
 	if !ok {
-		return sendError(ErrNotFoundWithParam("PFCP session", "localSEID", localSEID))
+		return sendError(errors2.ErrNotFoundWithParam("PFCP session", "localSEID", localSEID))
 	}
 
 	var fseidIP uint32
@@ -421,7 +422,7 @@ func (pConn *PFCPConn) handleSessionDeletionRequest(msg message.Message) (messag
 
 	session, ok := pConn.sessions[localSEID]
 	if !ok {
-		return sendError(ErrNotFoundWithParam("PFCP session", "localSEID", localSEID))
+		return sendError(errors2.ErrNotFoundWithParam("PFCP session", "localSEID", localSEID))
 	}
 
 	cause := upf.sendMsgToUPF(upfMsgTypeDel, session.PacketForwardingRules, PacketForwardingRules{})
@@ -430,7 +431,7 @@ func (pConn *PFCPConn) handleSessionDeletionRequest(msg message.Message) (messag
 	}
 
 	if err := releaseAllocatedIPs(upf.ippool, session); err != nil {
-		return sendError(ErrOperationFailedWithReason("session IP dealloc", err.Error()))
+		return sendError(errors2.ErrOperationFailedWithReason("session IP dealloc", err.Error()))
 	}
 
 	/* delete sessionRecord */
@@ -529,7 +530,7 @@ func (pConn *PFCPConn) handleSessionReportResponse(msg message.Message) error {
 	if cause == ie.CauseSessionContextNotFound {
 		sessItem, ok := pConn.sessions[seid]
 		if !ok {
-			return errProcess(ErrNotFoundWithParam("PFCP session context", "SEID", seid))
+			return errProcess(errors2.ErrNotFoundWithParam("PFCP session context", "SEID", seid))
 		}
 
 		log.Warnln("context not found, deleting session locally")
@@ -540,7 +541,7 @@ func (pConn *PFCPConn) handleSessionReportResponse(msg message.Message) error {
 			upfMsgTypeDel, sessItem.PacketForwardingRules, PacketForwardingRules{})
 		if cause == ie.CauseRequestRejected {
 			return errProcess(
-				ErrOperationFailedWithParam("delete session from fastpath", "seid", seid))
+				errors2.ErrOperationFailedWithParam("delete session from fastpath", "seid", seid))
 		}
 
 		return nil

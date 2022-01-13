@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -93,7 +94,7 @@ func (f *far) parseFAR(farIE *ie.IE, fseid uint64, upf *upf, op operation) error
 	}
 
 	if action == 0 {
-		return ErrInvalidArgument("FAR Action", action)
+		return errors.ErrInvalidArgument("FAR Action", action)
 	}
 
 	f.applyAction = action
@@ -108,7 +109,7 @@ func (f *far) parseFAR(farIE *ie.IE, fseid uint64, upf *upf, op operation) error
 	case update:
 		fwdIEs, err = farIE.UpdateForwardingParameters()
 	default:
-		return ErrInvalidOperation(op)
+		return errors.ErrInvalidOperation(op)
 	}
 
 	if err != nil {

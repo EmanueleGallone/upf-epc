@@ -5,6 +5,7 @@ package main
 
 import (
 	"errors"
+	errors2 "github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"strconv"
 	"strings"
@@ -32,14 +33,14 @@ func (ep *endpoint) parseNet(ipnet string) error {
 		ipnet = ipNetFields[0] + "/32"
 	case 2:
 	default:
-		return ErrInvalidArgument("network string", len(ipNetFields))
+		return errors2.ErrInvalidArgument("network string", len(ipNetFields))
 	}
 
 	var err error
 
 	_, ep.IPNet, err = net.ParseCIDR(ipnet)
 	if err != nil {
-		return ErrOperationFailedWithReason("ParseCIDR", err.Error())
+		return errors2.ErrOperationFailedWithReason("ParseCIDR", err.Error())
 	}
 
 	return nil
@@ -48,7 +49,7 @@ func (ep *endpoint) parseNet(ipnet string) error {
 func (ep *endpoint) parsePort(port string) error {
 	ports := strings.Split(port, "-")
 	if len(ports) == 0 || len(ports) > 2 {
-		return ErrInvalidArgument("port string", port)
+		return errors2.ErrInvalidArgument("port string", port)
 	}
 	// Pretend this is a port range with one element.
 	if len(ports) == 1 {
@@ -67,7 +68,7 @@ func (ep *endpoint) parsePort(port string) error {
 
 	// TODO: support port ranges
 	if low != high {
-		return ErrInvalidArgumentWithReason("port", port, "port ranges are not supported yet")
+		return errors2.ErrInvalidArgumentWithReason("port", port, "port ranges are not supported yet")
 	}
 
 	ep.Port = uint16(low)

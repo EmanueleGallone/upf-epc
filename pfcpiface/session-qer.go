@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,7 +29,7 @@ func (s *PFCPSession) UpdateQER(q qer) error {
 		}
 	}
 
-	return ErrNotFound("QER")
+	return errors.ErrNotFound("QER")
 }
 
 // Int version of code present at https://github.com/juliangruber/go-intersect
@@ -145,5 +146,5 @@ func (s *PFCPSession) RemoveQER(id uint32) (*qer, error) {
 		}
 	}
 
-	return nil, ErrNotFound("QER")
+	return nil, errors.ErrNotFound("QER")
 }

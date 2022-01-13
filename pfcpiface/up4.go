@@ -6,6 +6,7 @@ package main
 import (
 	"encoding/binary"
 	"flag"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"math/rand"
 	"net"
 	"time"
@@ -99,7 +100,7 @@ func (up4 *UP4) getAccessIP() (*net.IPNet, error) {
 
 	resp, err := up4.p4client.ReadTableEntry(interfaceTableEntry)
 	if err != nil {
-		return nil, ErrOperationFailedWithReason("get Access IP from UP4", err.Error())
+		return nil, errors.ErrOperationFailedWithReason("get Access IP from UP4", err.Error())
 	}
 
 	accessIP, err := up4.p4RtTranslator.ParseAccessIPFromReadInterfaceTableResponse(resp)
@@ -159,7 +160,7 @@ func getCounterVal(p *UP4, counterID uint8) (uint64, error) {
 		}
 	}
 
-	return 0, ErrOperationFailedWithParam("counter allocation", "final val", val)
+	return 0, errors.ErrOperationFailedWithParam("counter allocation", "final val", val)
 }
 
 func (up4 *UP4) exit() {
@@ -194,12 +195,12 @@ func (up4 *UP4) initAllCounters() error {
 
 	err := up4.initCounter(preQosCounterID, "PreQosPipe.pre_qos_counter")
 	if err != nil {
-		return ErrOperationFailedWithReason("init preQosCounterID counter", err.Error())
+		return errors.ErrOperationFailedWithReason("init preQosCounterID counter", err.Error())
 	}
 
 	err = up4.initCounter(postQosCounterID, "PostQosPipe.post_qos_counter")
 	if err != nil {
-		return ErrOperationFailedWithReason("init postQosCounterID counter", err.Error())
+		return errors.ErrOperationFailedWithReason("init postQosCounterID counter", err.Error())
 	}
 
 	return nil
@@ -368,7 +369,7 @@ func (up4 *UP4) tryConnect() error {
 
 	err = up4.initAllCounters()
 	if err != nil {
-		return ErrOperationFailedWithReason("counters initialization", err.Error())
+		return errors.ErrOperationFailedWithReason("counters initialization", err.Error())
 	}
 
 	go up4.listenToDDNs()
@@ -414,13 +415,13 @@ func findRelatedFAR(pdr pdr, fars []far) (far, error) {
 		}
 	}
 
-	return far{}, ErrNotFoundWithParam("related FAR for PDR", "PDR", pdr)
+	return far{}, errors.ErrNotFoundWithParam("related FAR for PDR", "PDR", pdr)
 }
 
 // Returns error if we reach maximum supported GTP Tunnel Peers.
 func (up4 *UP4) allocateGTPTunnelPeerID() (uint8, error) {
 	if len(up4.tunnelPeerIDsPool) == 0 {
-		return 0, ErrOperationFailedWithReason("allocate GTP Tunnel Peer ID",
+		return 0, errors.ErrOperationFailedWithReason("allocate GTP Tunnel Peer ID",
 			"no free tunnel peer IDs available")
 	}
 

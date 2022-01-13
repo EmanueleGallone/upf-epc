@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/binary"
 	"flag"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"strconv"
 	"time"
@@ -1150,7 +1151,7 @@ func (b *bess) addSliceMeter(ctx context.Context, done chan<- bool, meterConfig 
 
 func (b *bess) processQER(ctx context.Context, any *anypb.Any, method upfMsgType, qosTableName string) error {
 	if method != upfMsgTypeAdd && method != upfMsgTypeDel && method != upfMsgTypeClear {
-		return ErrInvalidArgument("method name", method)
+		return errors.ErrInvalidArgument("method name", method)
 	}
 
 	methods := [...]string{"add", "add", "delete", "clear"}

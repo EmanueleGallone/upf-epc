@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -46,7 +47,7 @@ func (s *simMode) Set(value string) error {
 	case "create_continue":
 		*s = simModeCreateAndContinue
 	default:
-		return ErrInvalidArgument("sim mode", value)
+		return errors.ErrInvalidArgument("sim mode", value)
 	}
 
 	return nil

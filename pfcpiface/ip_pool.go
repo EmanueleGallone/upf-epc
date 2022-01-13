@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"strings"
 	"sync"
@@ -26,7 +27,7 @@ func (i *IPPool) DeallocIP(seid uint64) error {
 	ip, ok := i.inventory[seid]
 	if !ok {
 		log.Warnln("Attempt to dealloc non-existent session", seid)
-		return ErrInvalidArgumentWithReason("seid", seid, "can't dealloc non-existent session")
+		return errors.ErrInvalidArgumentWithReason("seid", seid, "can't dealloc non-existent session")
 	}
 
 	delete(i.inventory, seid)
@@ -41,7 +42,7 @@ func (i *IPPool) LookupOrAllocIP(seid uint64) (net.IP, error) {
 	defer i.mu.Unlock()
 
 	if len(i.freePool) == 0 {
-		return nil, ErrOperationFailedWithReason("IP allocation", "ip pool empty")
+		return nil, errors.ErrOperationFailedWithReason("IP allocation", "ip pool empty")
 	}
 
 	// Try to find an exiting session and return the allocated IP.

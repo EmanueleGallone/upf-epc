@@ -6,6 +6,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 
 	p4ConfigV1 "github.com/p4lang/p4runtime/go/p4/config/v1"
@@ -101,7 +102,7 @@ func convertValueToBinary(value interface{}) ([]byte, error) {
 
 		return b, nil
 	default:
-		return nil, ErrOperationFailedWithParam("convert type to byte array", "type", t)
+		return nil, errors.ErrOperationFailedWithParam("convert type to byte array", "type", t)
 	}
 }
 
@@ -132,7 +133,7 @@ func (t *P4rtTranslator) getActionByID(actionID uint32) (*p4ConfigV1.Action, err
 		}
 	}
 
-	return nil, ErrNotFoundWithParam("action", "ID", actionID)
+	return nil, errors.ErrNotFoundWithParam("action", "ID", actionID)
 }
 
 func (t *P4rtTranslator) getTableByID(tableID uint32) (*p4ConfigV1.Table, error) {
@@ -142,7 +143,7 @@ func (t *P4rtTranslator) getTableByID(tableID uint32) (*p4ConfigV1.Table, error)
 		}
 	}
 
-	return nil, ErrNotFoundWithParam("table", "ID", tableID)
+	return nil, errors.ErrNotFoundWithParam("table", "ID", tableID)
 }
 
 func (t *P4rtTranslator) getTableIDByName(name string) (uint32, error) {
@@ -152,7 +153,7 @@ func (t *P4rtTranslator) getTableIDByName(name string) (uint32, error) {
 		}
 	}
 
-	return 0, ErrNotFoundWithParam("table", "name", name)
+	return 0, errors.ErrNotFoundWithParam("table", "name", name)
 }
 
 func (t *P4rtTranslator) getCounterByName(name string) (*p4ConfigV1.Counter, error) {
@@ -162,7 +163,7 @@ func (t *P4rtTranslator) getCounterByName(name string) (*p4ConfigV1.Counter, err
 		}
 	}
 
-	return nil, ErrNotFoundWithParam("counter", "name", name)
+	return nil, errors.ErrNotFoundWithParam("counter", "name", name)
 }
 
 func (t *P4rtTranslator) getMatchFieldIDByName(table *p4ConfigV1.Table, fieldName string) uint32 {
@@ -198,7 +199,7 @@ func (t *P4rtTranslator) getActionParamByName(action *p4ConfigV1.Action, paramNa
 // TODO: find a way to use *p4.TableEntry as receiver
 func (t *P4rtTranslator) withExactMatchField(entry *p4.TableEntry, name string, value interface{}) error {
 	if entry.TableId == 0 {
-		return ErrInvalidArgumentWithReason("entry.TableId", entry.TableId, "no table name for entry defined, set table name before adding match fields")
+		return errors.ErrInvalidArgumentWithReason("entry.TableId", entry.TableId, "no table name for entry defined, set table name before adding match fields")
 	}
 
 	p4Table, err := t.getTableByID(entry.TableId)
@@ -208,7 +209,7 @@ func (t *P4rtTranslator) withExactMatchField(entry *p4.TableEntry, name string, 
 
 	p4MatchField := t.getMatchFieldByName(p4Table, name)
 	if p4MatchField == nil {
-		return ErrOperationFailedWithParam("find match field", "name", name)
+		return errors.ErrOperationFailedWithParam("find match field", "name", name)
 	}
 
 	matchField := &p4.FieldMatch{
@@ -238,7 +239,7 @@ func (t *P4rtTranslator) withTernaryMatchField(entry *p4.TableEntry, name string
 	ternaryFieldLog.Trace("Adding ternary match field to the entry")
 
 	if entry.TableId == 0 {
-		return ErrInvalidArgumentWithReason("entry.TableId", entry.TableId, "no table name for entry defined, set table name before adding match fields")
+		return errors.ErrInvalidArgumentWithReason("entry.TableId", entry.TableId, "no table name for entry defined, set table name before adding match fields")
 	}
 
 	byteVal, err := convertValueToBinary(value)
@@ -253,7 +254,7 @@ func (t *P4rtTranslator) withTernaryMatchField(entry *p4.TableEntry, name string
 
 	if len(byteVal) != len(byteMask) {
 		ternaryFieldLog.Trace("value and mask length mismatch")
-		return ErrOperationFailedWithParam("value and mask length mismatch for ternary field", "field", name)
+		return errors.ErrOperationFailedWithParam("value and mask length mismatch for ternary field", "field", name)
 	}
 
 	p4Table, err := t.getTableByID(entry.TableId)
@@ -263,7 +264,7 @@ func (t *P4rtTranslator) withTernaryMatchField(entry *p4.TableEntry, name string
 
 	p4MatchField := t.getMatchFieldByName(p4Table, name)
 	if p4MatchField == nil {
-		return ErrOperationFailedWithParam("find match field", "name", name)
+		return errors.ErrOperationFailedWithParam("find match field", "name", name)
 	}
 
 	matchField := &p4.FieldMatch{
@@ -284,7 +285,7 @@ func (t *P4rtTranslator) withTernaryMatchField(entry *p4.TableEntry, name string
 
 func (t *P4rtTranslator) withActionParam(action *p4.Action, name string, value interface{}) error {
 	if action.ActionId == 0 {
-		return ErrInvalidArgumentWithReason("entry.ActionId", action.ActionId,
+		return errors.ErrInvalidArgumentWithReason("entry.ActionId", action.ActionId,
 			"invalid action ID defined, set action ID before adding action parameters")
 	}
 
@@ -300,7 +301,7 @@ func (t *P4rtTranslator) withActionParam(action *p4.Action, name string, value i
 
 	p4ActionParam := t.getActionParamByName(p4Action, name)
 	if p4ActionParam == nil {
-		return ErrOperationFailedWithParam("find action param", "action param name", name)
+		return errors.ErrOperationFailedWithParam("find action param", "action param name", name)
 	}
 
 	param := &p4.Action_Param{
@@ -320,7 +321,7 @@ func (t *P4rtTranslator) getActionParamValue(tableEntry *p4.TableEntry, id uint3
 		}
 	}
 
-	return nil, ErrNotFoundWithParam("action param", "id", id)
+	return nil, errors.ErrNotFoundWithParam("action param", "id", id)
 }
 
 func (t *P4rtTranslator) getLPMMatchFieldValue(tableEntry *p4.TableEntry, name string) (*net.IPNet, error) {
@@ -337,7 +338,7 @@ func (t *P4rtTranslator) getLPMMatchFieldValue(tableEntry *p4.TableEntry, name s
 		if mf.FieldId == p4MatchFieldID {
 			lpmField := mf.GetLpm()
 			if lpmField == nil {
-				return nil, ErrOperationFailedWithReason("getting LPM match field value",
+				return nil, errors.ErrOperationFailedWithReason("getting LPM match field value",
 					"trying to get LPM value for non-LPM match field")
 			}
 
@@ -351,7 +352,7 @@ func (t *P4rtTranslator) getLPMMatchFieldValue(tableEntry *p4.TableEntry, name s
 		}
 	}
 
-	return nil, ErrNotFoundWithParam(fmt.Sprintf("match field %s", name), "table", p4Table.Preamble.Name)
+	return nil, errors.ErrNotFoundWithParam(fmt.Sprintf("match field %s", name), "table", p4Table.Preamble.Name)
 }
 
 func (t *P4rtTranslator) BuildInterfaceTableEntryNoAction() *p4.TableEntry {
@@ -391,7 +392,7 @@ func (t *P4rtTranslator) ParseAccessIPFromReadInterfaceTableResponse(resp *p4.Re
 		}
 
 		if len(interfaceType) != 1 && len(directionValue) != 1 {
-			return nil, ErrOperationFailedWithReason("parse Access IP from UP4",
+			return nil, errors.ErrOperationFailedWithReason("parse Access IP from UP4",
 				"invalid length of action params")
 		}
 
@@ -400,7 +401,7 @@ func (t *P4rtTranslator) ParseAccessIPFromReadInterfaceTableResponse(resp *p4.Re
 		}
 	}
 
-	return nil, ErrOperationFailed("parse Access IP from P4Runtime response")
+	return nil, errors.ErrOperationFailed("parse Access IP from P4Runtime response")
 }
 
 func (t *P4rtTranslator) buildUplinkSessionsEntry(pdr pdr) (*p4.TableEntry, error) {
@@ -485,7 +486,7 @@ func (t *P4rtTranslator) BuildSessionsTableEntry(pdr pdr, tunnelPeerID uint8, ne
 	case core:
 		return t.buildDownlinkSessionsEntry(pdr, tunnelPeerID, needsBuffering)
 	default:
-		return nil, ErrUnsupported("source interface type of PDR", pdr.srcIface)
+		return nil, errors.ErrUnsupported("source interface type of PDR", pdr.srcIface)
 	}
 }
 
@@ -596,7 +597,7 @@ func (t *P4rtTranslator) BuildTerminationsTableEntry(pdr pdr, relatedFAR far, tc
 	case core:
 		return t.buildDownlinkTerminationsEntry(pdr, relatedFAR, tc)
 	default:
-		return nil, ErrUnsupported("source interface type of PDR", pdr.srcIface)
+		return nil, errors.ErrUnsupported("source interface type of PDR", pdr.srcIface)
 	}
 }
 

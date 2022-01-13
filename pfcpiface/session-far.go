@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"time"
 
@@ -85,7 +86,7 @@ func (s *PFCPSession) UpdateFAR(f *far, endMarkerList *[][]byte) error {
 		}
 	}
 
-	return ErrNotFound("FAR")
+	return errors.ErrNotFound("FAR")
 }
 
 func (s *PFCPSession) setNotifyFlag(flag bool) {
@@ -135,5 +136,5 @@ func (s *PFCPSession) RemoveFAR(id uint32) (*far, error) {
 		}
 	}
 
-	return nil, ErrNotFound("FAR")
+	return nil, errors.ErrNotFound("FAR")
 }

@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/omec-project/upf-epc/pfcpiface/utils/errors"
 	"net"
 	"time"
 
@@ -85,7 +86,7 @@ func (u *upf) isConnected() bool {
 
 func (u *upf) addSliceInfo(sliceInfo *SliceInfo) error {
 	if sliceInfo == nil {
-		return ErrInvalidArgument("sliceInfo", sliceInfo)
+		return errors.ErrInvalidArgument("sliceInfo", sliceInfo)
 	}
 
 	u.sliceInfo = sliceInfo
