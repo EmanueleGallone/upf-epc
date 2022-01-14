@@ -486,7 +486,8 @@ func (t *P4rtTranslator) BuildSessionsTableEntry(pdr pdr, tunnelPeerID uint8, ne
 	case core:
 		return t.buildDownlinkSessionsEntry(pdr, tunnelPeerID, needsBuffering)
 	default:
-		return nil, errors.ErrUnsupported("source interface type of PDR", pdr.srcIface)
+		return nil, &errors.PFCPErr{Message: "source interface type of PDR", Value: pdr.srcIface}
+		//return nil, errors.ErrUnsupported("source interface type of PDR", pdr.srcIface)
 	}
 }
 
